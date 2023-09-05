@@ -1,22 +1,23 @@
 "use client";
 
 import qs from "query-string";
+import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogHeader,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 
 export const DeleteChannelModal = () => {
-  const {isOpen, onClose, type, data } = useModal();
+  const { isOpen, onClose, type, data } = useModal();
   const router = useRouter();
 
   const isModalOpen = isOpen && type === "deleteChannel";
@@ -25,15 +26,17 @@ export const DeleteChannelModal = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
-    try{
+    try {
       setIsLoading(true);
       const url = qs.stringifyUrl({
         url: `/api/channels/${channel?.id}`,
         query: {
-          serverId: server?.id
+          serverId: server?.id,
         }
       })
+
       await axios.delete(url);
+
       onClose();
       router.refresh();
       router.push(`/servers/${server?.id}`);
@@ -42,7 +45,7 @@ export const DeleteChannelModal = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
@@ -52,7 +55,7 @@ export const DeleteChannelModal = () => {
             Delete Channel
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
-            Are you sure you want to do this?<br />
+            Are you sure you want to do this? <br />
             <span className="text-indigo-500 font-semibold">#{channel?.name}</span> will be permanently deleted.
           </DialogDescription>
         </DialogHeader>
@@ -67,8 +70,8 @@ export const DeleteChannelModal = () => {
             </Button>
             <Button
               disabled={isLoading}
-              onClick={onClick}
               variant="primary"
+              onClick={onClick}
             >
               Confirm
             </Button>
@@ -76,5 +79,5 @@ export const DeleteChannelModal = () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
